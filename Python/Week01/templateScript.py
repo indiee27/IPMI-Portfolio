@@ -27,10 +27,22 @@ print(img.dtype)
 # ***************
 # ADD CODE HERE TO REORIENTATE THE IMAGE INTO 'STANDARD ORIENTATION'
 # ***************
+from PIL import ImageOps
+
+# reorientate image to standard orientation
+def orientation_standard(img):
+  # transpose - switch x and y dimensions
+  transpose_image = np.transpose(img)
+  # flip along second dimension - top to bottom
+  flipped_image = np.flip(transpose_image)
+  return flipped_image
+
+img2 = orientation_standard(img)
 
 # display the image using the dispImage function from utils.py
 from utils import dispImage
-dispImage(img)
+#dispImage(img)
+dispImage(img2)
 
 #%%
 
