@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-template script for use in the image registration exercises 1 for module MPHY0025 (IPMI)
 
-Jamie McClelland
-UCL
-"""
 #%%
 # set MATPLOTLIB to use auto backend - this will display figures in separate windows and
 # is required for the animation to display correctly
@@ -20,16 +15,14 @@ print(img.dtype)
 
 # convert data type to double to avoid errors when processing integers
 import numpy as np
+
 # convert img to double
 img = np.double(img)
 print(img.dtype)
 
-# ***************
-# ADD CODE HERE TO REORIENTATE THE IMAGE INTO 'STANDARD ORIENTATION'
-# ***************
+# reorientate image to standard orientation
 from PIL import ImageOps
 
-# reorientate image to standard orientation
 def orientation_standard(img):
   # transpose - switch x and y dimensions
   transpose_image = np.transpose(img)
@@ -37,37 +30,37 @@ def orientation_standard(img):
   flipped_image = np.flip(transpose_image)
   return flipped_image
 
-img2 = orientation_standard(img)
+source_img = orientation_standard(img)
 
 # display the image using the dispImage function from utils.py
 from utils import dispImage
+plt.figure()
 dispImage(img)
-dispImage(img2)
+plt.figure()
+dispImage(source_img)
 
 #%%
 
-# ***************
-# EDIT THE LINE BELOW TO CREATE A MATRIX REPRESENTING A
-# TRANSLATION BY 10 PIXELS IN X AND 20 PIXELS IN Y
-T = np.matrix([[10, 0, 0],[0,20,0],[0,0,1]])
-# ***************
-print(T)
+# define a matrix representing a translation of [10, 20, 0]
+T1 = np.matrix([[1, 0, 10],[0, 1, 20],[0, 0, 1]])
+print(T1)
 
-# ***************
-# ADD/EDIT CODE HERE TO:
-#
-# CREATE A DEFORMATION FIELD FROM THE AFFINE MATRIX
-#(YOU NEED TO ADD THE REQUIRED INPUTS TO THE FUNCTION CALL)
+# inputs for deformation matrix
+num_pix_x = len(source_img[0])
+num_pix_y = len(source_img[1])
+
+# create a deformation field from the affine matrix in utils.py
 from utils import defFieldFromAffineMatrix
 
-def_field = defFieldFromAffineMatrix()
+def_field = defFieldFromAffineMatrix(T1, num_pix_x, num_pix_y)
 
-# RESAMPLE THE IMAGE USING THE DEFORMATION FIELD
+# resample the image using the deformation field
 from utils import resampImageWithDefField
-img_resampled = resampImageWithDefField()
-# ***************
+
+img_resampled = resampImageWithDefField(source_img, def_field, interp_method = 'linear', pad_value=np.NaN)
 
 # display the transformed image
+plt.figure()
 dispImage(img_resampled)
 
 # check the value of pixel 255,255 in the resampled image
@@ -75,37 +68,70 @@ print(img_resampled[255,255])
 
 #%%
 
-# ***************
-# ADD CODE HERE TO:
-#
-# RESAMPLE THE IMAGE USING NEAREST NEIGHBOUR AND SPLINEF2D INTERPOLATION
+# resample using nearest neighbour and splinef2d
+img_resampled_nearest_neighbour = resampImageWithDefField(source_img, def_field, interp_method = 'nearest', pad_value=np.NaN)
+img_resampled_splinef2D = resampImageWithDefField(source_img, def_field, interp_method = 'splinef2d', pad_value=np.NaN)
 
-
-# DISPLAY THE RESULTS IN SEPARATE FIGURES
+# display in seperate figures
 plt.figure()
-
+dispImage(img_resampled_nearest_neighbour)
 plt.figure()
+dispImage(img_resampled_splinef2D)
 
-# DISPLAY DIFFERENCE IMAGES BETWEEN THE NEW RESULTS AND THE ORIGINAL RESULT THAT USED
-# LINEAR INTERPOLATION
+# show difference images between new resamples and original linear
+diff_linear_nearest = abs(img_resampled_nearest_neighbour - img_resampled)
 plt.figure()
+dispImage(diff_linear_nearest)
 
+diff_linear_splinef2d = abs(img_resampled_splinef2D - img_resampled)
 plt.figure()
-
-# ***************
+dispImage(diff_linear_splinef2d)
 
 #%%
 
-# ***************
-# ADD CODE HERE TO REPEAT THE STEPS ABOVE USING A TRANSLATION BY 10.5 PIXELS
-# IN X AND 20.5 PIXELS IN Y
-# ***************
+# repeat the translation using a deformation matrix of [10.5, 20.5, 0]
+T2 = np.matrix([[1, 0, 10.5],[0, 1, 20.5],[0, 0, 1]])
+
+def_field_2 = defFieldFromAffineMatrix(T2, num_pix_x, num_pix_y)
+
+img_resampled_2 = resampImageWithDefField(source_img, def_field_2, interp_method = 'linear', pad_value=np.NaN)
+
+plt.figure()
+dispImage(img_resampled_2)
+
+# resample using nearest neighbour and splinef2D interpolation
+img_resampled_2_nearest_neighbour = resampImageWithDefField(source_img, def_field_2, interp_method='nearest', pad_value=np.NaN)
+plt.figure()
+dispImage(img_resampled_2_nearest_neighbour)
+
+img_resampled_2_splinef2d = resampImageWithDefField(source_img, def_field_2, interp_method = 'splinef2d', pad_value=np.NaN)
+plt.figure()
+dispImage(img_resampled_2_splinef2d)
+
+# show the differences between new resamples and linear 2
+diff_linear_2_nearest = abs(img_resampled_2_nearest_neighbour - img_resampled_2)
+plt.figure()
+dispImage(diff_linear_2_nearest)
+
+diff_linear_2_splinef2d = abs(img_resampled_2_splinef2d - img_resampled_2)
+plt.figure()
+dispImage(diff_linear_2_splinef2d)
 
 #%%
 
-# ***************
-# ADD CODE HERE TO REDISPLAY THE DIFFERENCE IMAGES WITH INTENSITY LIMITS OF [-20, 20]
-# ***************
+# difference images redisplayed with intensity limits of [-20, 20]
+plt.figure()
+dispImage(diff_linear_nearest, int_lims = [-20, 20])
+
+plt.figure()
+dispImage(diff_linear_splinef2d, int_lims = [-20, 20])
+
+plt.figure()
+dispImage(diff_linear_2_nearest, int_lims = [-20, 20])
+
+plt.figure()
+dispImage(diff_linear_2_splinef2d, int_lims = [-20, 20])
+
 
 #%%
 
