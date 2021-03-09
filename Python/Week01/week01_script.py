@@ -136,6 +136,8 @@ dispImage(diff_linear_2_splinef2d, int_lims = [-20, 20])
 #%%
 
 # define a function to calculate the affine matrix for a rotation about a point
+from math import *
+
 def affineMatrixForRotationAboutPoint(theta, p_coords):
   """
   function to calculate the affine matrix corresponding to an anticlockwise
@@ -148,9 +150,17 @@ def affineMatrixForRotationAboutPoint(theta, p_coords):
   
   OUTPUTS:   aff_mat: a 3 x 3 affine matrix
   """
-  # ***************
-  # ADD CODE HERE TO IMPLEMENT THE ABOVE FUNCTION
-  # ***************
+  x_coord = p_coords[0]
+  y_coord = p_coords[1]
+  r00 = cos(theta)
+  r10 = sin(theta)
+  r01 = -r10
+  r11 = r00
+  r02 = x_coord - (r00 * x_coord) - (r01 * y_coord)
+  r12 = y_coord - (r10 * x_coord) - (r11 * y_coord)
+
+  aff_mat = np.matrix([[r00, r01, r02],[r10, r11, r12],[0, 0, 1]])
+
   return aff_mat
 
 #%%
@@ -158,38 +168,46 @@ def affineMatrixForRotationAboutPoint(theta, p_coords):
 # close any open figures
 plt.close('all')
 
-# ***************
-# ADD CODE HERE TO:
-#
 # USE THE ABOVE FUNCTION TO CALCULATE THE AFFINE MATRIX REPRESENTING AN ANTICLOCKWISE
 # ROTATION OF 5 DEGREES ABOUT THE CENTRE OF THE IMAGE
-R = affineMatrixForRotationAboutPoint()
+R = affineMatrixForRotationAboutPoint(5, [0,0])
 
 # USE THIS ROTATION TO TRANSFORM THE ORIGINAL IMAGE
+rotation_transform_5_degree = defFieldFromAffineMatrix(R, num_pix_x, num_pix_y)
+rotation_image_5_degree = resampImageWithDefField(source_img, rotation_transform_5_degree, interp_method = 'linear')
 
 # DISPLAY THE RESULT USIGN THE INTENSITY LIMITS FROM THE ORIGINAL IMAGE
-plt.figure()
-int_lims_img = 
-dispImage()
-# ***************  
+plt.figure(1)
+dispImage(rotation_image_5_degree)
+
+plt.figure(2)
+smallest = np.amin(source_img)
+biggest = np.amax(source_img)
+int_lims_img = [smallest, biggest]
+dispImage(rotation_image_5_degree, int_lims = int_lims_img) 
 
 #%%
 
 # ***************
 # ADD/EDIT CODE HERE TO APPLY THE SAME TRANSFORMATION AGAIN TO THE RESAMPLED IMAGE
-# AND DISPLAY THE RESULT. REPEAT THIS 71 TIMES SO THAT THE IMAGE APPEARS TO ROTATE 
+# AND DISPLAY THE RESULT. REPEAT THIS 72 TIMES SO THAT THE IMAGE APPEARS TO ROTATE 
 # A FULL 360 DEGREES
-for n in range(71):
-  
+previous_img = source_img
+for n in range(72):
+  plt.close('all')
+
+  current_img = previous_img
+  rotation_image = resampImageWithDefField(current_img, rotation_transform_5_degree, interp_method = 'linear', pad_value = 0)
+
+  plt.figure(1)
+  dispImage(rotation_image)
   
   #add a short pause after displaying the image so the figure display updates
   plt.pause(0.05)
+  previous_img = rotation_image
 
-# *************** 
 
-# ***************   
 # EDIT THE CODE ABOVE SO THAT IT USES A PADDING VALUE OF 0 INSTEAD OF NAN
-# ***************
   
 #%%
   
