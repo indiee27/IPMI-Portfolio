@@ -9,6 +9,13 @@ function aff_mat = affineMatrixForRotationAboutPoint(theta, p_coords)
 %
 %OUTPUTS:   aff_mat: a 3 x 3 affine matrix
 
-% ***************
-% ADD CODE HERE TO IMPLEMENT THE ABOVE FUNCTION
-% ***************
+%change theta value
+theta = pi * theta/180;
+
+%form matrices for translation and rotation
+T1 = [1,0,-p_coords(1);0,1,-p_coords(2);0,0,1];
+T2 = [1,0,p_coords(1);0,1,p_coords(2);0,0,1];
+R = [cos(theta),-sin(theta),0;sin(theta),cos(theta),0;0,0,1];
+
+aff_mat = T2*R*T1;
+return

@@ -11,11 +11,9 @@ disp(class(img));
 img = double(img);
 disp(class(img));
 
-% ***************
-% ADD CODE HERE TO REORIENTATE THE IMAGE INTO 'STANDARD ORIENTATION'
-% ***************
-
 % display the image using the dispImage function 
+% NB don't need to flip it to standard orientation cos this is covered by
+% the dispImage function
 dispImage(img)
 
 %%
@@ -23,10 +21,7 @@ dispImage(img)
 % ***************
 % EDIT THE LINES BELOW TO CREATE A MATRIX REPRESENTING A
 % TRANSLATION BY 10 PIXELS IN X AND 20 PIXELS IN Y
-T = [1 0 0
-    0 1 0
-    0 0 1];
-% ***************
+T = [10,0,0;0,20,0;0,0,1];
 disp(T)
 
 % ***************
